@@ -1,3 +1,13 @@
+const buttons = document.querySelectorAll('button');
+const container = document.querySelector('.container');
+const plScoreNode = document.querySelector('#player-score');
+const compScoreNode = document.querySelector('#computer-score');
+const roundResult = document.querySelector('#round-result');
+const whoWon = document.querySelector('#who-won');
+const winnerNode = document.querySelector('#winner');
+let playerScore = 0;
+let computerScore = 0;
+
 function computerPlay() {
     const randomNum = Math.floor(Math.random() * 3)
 
@@ -103,38 +113,61 @@ function getWinner(playerSelection, computerSelection) {
     return playerWon
 }
 
-function game() {
-    playerScore = 0
-    computerScore = 0
-    count = 0
+function game(e) {
+    
+    let playerChoice = e.target.name;
 
-    // Run the game loop 5 times
-    while (count < 5) {
-        let playerChoice = prompt('Choose either rock, paper, or scissors...')
-        let computerChoice = computerPlay()
-        result = getWinner(playerChoice, computerChoice)
+    // Get the computer's selection
+    let computerChoice = computerPlay();
 
-        // Get the winner for the round
-        if (result === -1) {
-            computerScore++
-        }
+    let message = playRound(playerChoice, computerChoice);
+    // Display the message to the user
+    roundResult.textContent = message;
 
-        if (result === 1) {
-            playerScore++
-        }
+    // Get the winner
+    let winner = getWinner(playerChoice, computerChoice);
 
-        const roundResult = playRound(playerChoice, computerChoice)
-        console.log(roundResult)
-        count++
+    if(winner === 1) {
+        playerScore++;
+    } 
+
+    if(winner === -1) {
+        computerScore++
     }
 
-    if (playerScore > computerScore) {
-        console.log('You win!')
-    } else {
-        console.log('You lose!')
+    // Update scoreboard
+    plScoreNode.textContent = playerScore;
+    compScoreNode.textContent = computerScore;
+
+    if(playerScore === 5) {
+        whoWon.textContent = 'Congratulations! You won!';
+        winnerNode.style.display = 'block';
+        playerScore = 0;
+        computerScore = 0;
+        setTimeout(() => {
+            reset();
+        }, 2000);
     }
-    console.log('Player Score', playerScore)
-    console.log('Computer Score', computerScore)
+
+    if(computerScore === 5) {
+        whoWon.textContent = 'Sorry. You lost';
+        winnerNode.style.display = 'block';
+        playerScore = 0;
+        computerScore = 0;
+        setTimeout(() => {
+            reset();
+        }, 2000);
+    }
 }
 
+function reset() {
+    winnerNode.style.display = 'none';
+}
+
+// Event Listeners
+buttons.forEach((button) => {
+    button.addEventListener('click', game);
+});
+
+// Run the game
 game()
